@@ -1,0 +1,78 @@
+package tests.pageobjects.chain;
+
+import java.io.File;
+
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selectors.byText;
+import static com.codeborne.selenide.Selenide.*;
+
+public class DemoFillFormPage {
+    private String firstName = "Anton",
+            lastName = "Babushkin",
+            email = "ab@mail.ru",
+            gender = "male",
+            mobileNumber = "9242832027",
+            year = "1987",
+            month = "October",
+            day = "24",
+            subjects = "Maths",
+            address = "Moscow, Marinskyi park 35, 122",
+            state = "Uttar Pradesh",
+            city = "Agra",
+            filename = "avatar.jpg";
+    private String[] hobbies = {"Sports", "Music"};
+
+    public DemoFillFormPage openPage() {
+        //Открыть страницу
+        open("https://demoqa.com/automation-practice-form");
+
+        return this;
+    }
+
+    public DemoFillFormPage fillForm() {
+        //заполниь форму
+        $("#firstName").setValue(firstName);
+        $("#lastName").setValue(lastName);
+        $("#userEmail").setValue(email);
+        $("#gender-radio-1").parent().click();
+        $("#userNumber").setValue(mobileNumber);
+
+        $("#dateOfBirthInput").click();
+        $(".react-datepicker__year-select").selectOption(this.year);
+        $(".react-datepicker__month-select").selectOption(this.month);
+        $(".react-datepicker__day--0" + this.day).click();
+
+        $("#subjectsInput").setValue(subjects).pressEnter();
+        $("#hobbies-checkbox-1").parent().click();
+        $("#hobbies-checkbox-3").parent().click();
+        $("#uploadPicture").uploadFile(new File("src/test/resources/" + filename));
+
+        $("#currentAddress").setValue(address).scrollTo();
+
+        $("#state").parent().click();
+        $(byText(state)).click();
+        $("#city").click();
+        $(byText(city)).click();
+        $("#submit").click();
+        return this;
+    }
+
+    public void checkForm() {
+        //проверить форму
+        checkValue("Student Name", this.firstName + " " + this.lastName);
+        checkValue("Student Email", this.email);
+        checkValue("Gender", this.gender);
+        checkValue("Mobile", this.mobileNumber);
+        checkValue("Date of Birth", this.day + " " + this.month + "," + this.year);
+        checkValue("Subjects", this.subjects);
+        checkValue("Hobbies", String.join(", ", this.hobbies));
+        checkValue("Picture", this.filename);
+        checkValue("Address", this.address);
+        checkValue("State and City", this.state + " " + this.city);
+    }
+
+   public void checkValue (String key, String value) {
+        $$(".table-responsive td").find(text(key)).sibling(0).shouldHave(exactText(value));
+    }
+}
