@@ -9,8 +9,8 @@ public class DemoFillFormTests {
     @Test
     void successfulFillFormTest(){
         demoFillFormPage
-                .openPage
-                .fillForm
-                .checkForm;
+                .openPage()
+                .fillForm()
+                .checkForm();
     }
 }
